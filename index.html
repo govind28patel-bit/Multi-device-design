@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Me4U multi-device UX case study by Govind Patel: phone, smartwatch and car display for Mahindra XEV electric SUVs.">
+<title>Me4U Multi-Device</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&family=Public+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one dark cinematic column (max 1180px); full-bleed bands for hero and journeys; blueprint scrolls sideways in its own frame. */
+:root{
+  color-scheme: dark;
+  --bg:#0f1317;
+  --bg-2:#12161c;
+  --panel:#171c24;
+  --line:#2a313c;
+  --fg:#e8edf3;
+  --muted:#93a0b0;
+  --cyan:#22d3ee;
+  --cyan-2:#0ea5c6;
+  --plum:#1d0f20;
+  --rose:#9b4e6c;
+  --amber:#a05707;
+  --amber-l:#f0a64a;
+  --ok:#7fb83a; --err:#cb4619; --warn:#e9ba27;
+  --bp-phase:#f3d21f; --bp-ev:#7cbcf8; --bp-cust:#a7d0fb; --bp-on:#c6e1fd; --bp-back:#e2f0ff; --bp-sup:#5a5d63;
+  --f-display:"Oxanium", "Eurostile", "Bank Gothic", system-ui, sans-serif;
+  --f-body:"Public Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --wrap:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:rgba(15,19,23,.92)}
+img{max-width:100%;display:block;height:auto}
+a{color:var(--cyan)}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+section{padding-block:clamp(72px,10vw,128px)}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.08;margin:0;text-wrap:balance;letter-spacing:.01em}
+h2{font-size:clamp(2rem,4.6vw,3.4rem);font-weight:700}
+h3{font-size:clamp(1.3rem,2.2vw,1.65rem);font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:12px}
+.eyebrow::before{content:"";width:28px;height:1px;background:currentColor}
+.lede{font-size:clamp(1.05rem,1.6vw,1.22rem);color:var(--muted);max-width:62ch}
+.head{display:grid;gap:18px;margin-bottom:clamp(36px,5vw,64px)}
+.grad{background:linear-gradient(100deg,var(--cyan),#6d8cf5);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(15,19,23,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:56px}
+.brand{font-family:var(--f-display);font-weight:700;letter-spacing:.06em;font-size:1rem;color:var(--fg);text-decoration:none;white-space:nowrap}
+.brand span{color:var(--cyan)}
+.nav{display:flex;gap:22px;font-size:.88rem;overflow-x:auto;scrollbar-width:none}
+.nav a{color:var(--muted);text-decoration:none;white-space:nowrap;transition:color .2s}
+.nav a:hover,.nav a.on{color:var(--fg)}
+.progress{position:absolute;left:0;bottom:-1px;height:2px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--cyan),#6d8cf5)}
+@media (max-width:720px){.nav{display:none}}
+
+/* hero */
+.hero{position:relative;padding:0;background:#000;overflow:hidden}
+.hero-img{width:100%;aspect-ratio:2/1;object-fit:cover;max-height:78vh;animation:heroIn 1.8s cubic-bezier(.2,.7,.2,1) both}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.18) 48%,transparent 62%);transform:translateX(-100%);animation:sweep 2.6s .6s ease-out forwards;pointer-events:none}
+.hero-fade{position:absolute;inset:auto 0 0;height:30%;background:linear-gradient(transparent,var(--bg))}
+@keyframes heroIn{from{transform:scale(1.08);filter:brightness(.4)}to{transform:scale(1);filter:brightness(1)}}
+@keyframes sweep{to{transform:translateX(100%)}}
+
+/* overview */
+.intro{padding-top:clamp(40px,6vw,72px)}
+.intro-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(32px,5vw,72px);align-items:center}
+.intro h1{font-size:clamp(2.4rem,6vw,4.6rem);font-weight:800;line-height:1}
+.intro h1 small{display:block;font-size:.36em;font-weight:500;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+.intro .lede{margin-top:22px}
+.meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:36px}
+.meta div{background:var(--bg-2);padding:16px 18px;min-width:0}
+.meta dt{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.meta dd{margin:6px 0 0;font-weight:500}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:999px;font-family:var(--f-display);font-weight:600;letter-spacing:.04em;text-decoration:none;font-size:.95rem;border:1px solid var(--cyan);color:var(--bg);background:var(--cyan);transition:transform .2s, box-shadow .2s;cursor:pointer}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px -10px var(--cyan)}
+.btn.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--cyan);box-shadow:none}
+.devices{position:relative}
+.devices img{animation:float 6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px)}}
+@media (max-width:860px){.intro-grid{grid-template-columns:1fr}}
+
+/* shift: analog vs digital */
+.shift{position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--bg-2)}
+.shift-pane{display:grid;grid-template-columns:1fr 1fr}
+.era{padding:clamp(24px,4vw,48px);display:grid;gap:14px;align-content:start;text-align:center;min-width:0}
+.era.analog{background:#1c1c1c}
+.era.digital{background:linear-gradient(180deg,#0d2a33,#0b1f26)}
+.era .yrs{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.3em;color:var(--muted)}
+.era.digital .yrs{color:var(--cyan)}
+.era h3{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700}
+.era.digital h3{text-shadow:0 0 24px rgba(34,211,238,.6)}
+.era p{color:var(--muted);font-size:.95rem;max-width:40ch;margin:0 auto}
+.era.digital p{color:#7fd8e8}
+.era img{border-radius:8px;margin-top:10px;width:100%;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.shift:hover .era img{transform:scale(1.03)}
+.shift-dial{position:absolute;left:50%;top:50%;translate:-50% -50%;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:var(--bg);border:2px solid var(--cyan);font-family:var(--f-display);font-weight:700;font-size:.8rem;letter-spacing:.1em;color:var(--cyan);box-shadow:0 0 0 0 rgba(34,211,238,.5);animation:pulse 2.4s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 18px rgba(34,211,238,0)}100%{box-shadow:0 0 0 0 rgba(34,211,238,0)}}
+@media (max-width:640px){.shift-pane{grid-template-columns:1fr}.shift-dial{top:50%}}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,5vw,96px);margin-top:clamp(48px,6vw,80px)}
+.compare h4{font-size:1.05rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:18px;display:flex;gap:10px;align-items:center}
+.compare h4 svg{width:22px;height:22px}
+.compare ul{list-style:none;margin:0;padding:0;display:grid;gap:16px}
+.compare li{border:1px solid rgba(34,211,238,.45);border-radius:6px;padding:16px 18px;background:linear-gradient(180deg,rgba(23,28,36,.9),rgba(16,20,26,.9));box-shadow:inset 3px 0 0 rgba(34,211,238,.7);transition:transform .3s, border-color .3s}
+.compare li:hover{transform:translateX(6px);border-color:var(--cyan)}
+.compare li b{display:block;font-family:var(--f-display);font-weight:500;font-size:1.15rem}
+.compare li span{font-size:.88rem;color:#73c6d6}
+.compare .old li{opacity:.86;filter:saturate(.4)}
+@media (max-width:720px){.compare{grid-template-columns:1fr}}
+
+/* data path */
+.path{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;margin-top:8px}
+.node{position:relative;text-align:center;padding:0 6px;min-width:0}
+.node .ring{width:clamp(64px,8vw,96px);aspect-ratio:1;margin:0 auto 14px;border-radius:22px;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line);position:relative;z-index:1;transition:border-color .3s, box-shadow .3s}
+.node .ring svg{width:42%;height:42%;stroke:var(--cyan);fill:none;stroke-width:1.6}
+.node.lit .ring{border-color:var(--cyan);box-shadow:0 0 30px -6px rgba(34,211,238,.6)}
+.node b{font-family:var(--f-display);font-weight:600;font-size:.98rem;display:block}
+.node small{color:var(--muted);font-size:.8rem;display:block;margin-top:4px}
+.wire{position:absolute;top:calc(clamp(64px,8vw,96px)/2);left:10%;right:10%;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px)}
+.packet{position:absolute;top:-4px;left:0;width:10px;height:10px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px 4px rgba(34,211,238,.7)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:clamp(40px,5vw,64px) 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.steps li{counter-increment:s;border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:.95rem}
+.steps li::before{content:counter(s,decimal-leading-zero);display:block;font-family:var(--f-mono);color:var(--cyan);font-size:.8rem;margin-bottom:6px}
+@media (max-width:760px){.path{grid-template-columns:1fr;gap:18px}.wire{display:none}.node{display:grid;grid-template-columns:72px 1fr;text-align:left;align-items:center;gap:14px}.node .ring{margin:0;width:64px}.steps{grid-template-columns:1fr}}
+
+/* stakeholders */
+.orbit-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(24px,5vw,64px);align-items:center}
+.orbit{position:relative;width:100%;max-width:560px;aspect-ratio:1;margin:0 auto}
+.ring-t,.ring-s,.ring-p{position:absolute;border-radius:50%;inset:0;margin:auto}
+.ring-t{width:100%;height:100%;border:1px solid rgba(240,130,60,.55)}
+.ring-s{width:66%;height:66%;background:radial-gradient(circle,#4a2a1c 0%,#3a2218 70%);box-shadow:0 0 60px rgba(240,110,40,.18)}
+.ring-p{width:40%;height:40%;background:#1b2840;border:1px solid #2b3b5a}
+.core{position:absolute;inset:0;margin:auto;width:20%;height:20%;border-radius:50%;background:#f06a1a;display:grid;place-items:center;text-align:center;font-family:var(--f-display);font-weight:700;font-size:clamp(.55rem,1.4vw,.78rem);line-height:1.1;box-shadow:0 0 0 0 rgba(240,106,26,.5);animation:pulse2 2.6s infinite}
+@keyframes pulse2{70%{box-shadow:0 0 0 22px rgba(240,106,26,0)}}
+.spin{position:absolute;inset:0;animation:rot 70s linear infinite}
+.spin.rev{animation-direction:reverse;animation-duration:50s}
+.chip{position:absolute;translate:-50% -50%;display:grid;justify-items:center;gap:4px;font-size:clamp(.6rem,1.4vw,.82rem);font-weight:600;white-space:nowrap}
+.chip i{width:clamp(26px,5vw,44px);aspect-ratio:1;border-radius:12px;background:#1e2633;border:1px solid #33405a;display:grid;place-items:center;font-style:normal}
+.chip i::after{content:"";width:34%;aspect-ratio:1;border-radius:50%;background:var(--c,var(--cyan))}
+.spin .chip{animation:rot 70s linear infinite reverse}
+.spin.rev .chip{animation:rot 50s linear infinite}
+@keyframes rot{to{rotate:360deg}}
+.tier-label{position:absolute;left:50%;translate:-50% 0;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;padding:3px 10px;border-radius:99px;background:var(--bg);border:1px solid rgba(240,130,60,.55);color:#f3a47a}
+.legend{display:grid;gap:22px}
+.legend div{border-left:2px solid var(--c);padding-left:16px}
+.legend b{font-family:var(--f-display);font-size:1.1rem;display:block;margin-bottom:4px}
+.legend span{color:var(--muted);font-size:.95rem}
+@media (max-width:820px){.orbit-wrap{grid-template-columns:1fr}}
+
+/* competitive */
+.table-scroll{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--bg-2)}
+table.comp{border-collapse:separate;border-spacing:0;width:100%;min-width:640px}
+.comp th,.comp td{padding:14px 12px;text-align:center;border-bottom:1px solid var(--line)}
+.comp tr:last-child td,.comp tr:last-child th{border-bottom:0}
+.comp thead th{font-family:var(--f-display);font-weight:600;padding-block:22px}
+.comp thead th small{display:block;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.16em;color:var(--muted);font-weight:400;margin-top:2px}
+.comp .logo{width:44px;height:44px;border-radius:12px;margin:0 auto 8px;display:grid;place-items:center;color:#fff}
+.comp .logo svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8}
+.comp tbody th{text-align:left;font-weight:500;white-space:nowrap}
+.comp tbody th small{display:block;color:var(--muted);font-weight:400;font-size:.78rem}
+.comp .own{background:rgba(34,211,238,.06)}
+.mark{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;font-size:.8rem;font-weight:700;transform:scale(0);transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+.mark.y{background:rgba(127,184,58,.18);color:var(--ok)}
+.mark.n{background:rgba(203,70,25,.18);color:#f06a4a}
+.mark.p{background:rgba(233,186,39,.16);color:var(--warn);width:auto;padding:0 10px;border-radius:99px;font-size:.66rem;letter-spacing:.1em}
+.in .mark{transform:scale(1)}
+
+/* interviews */
+.carousel{position:relative}
+.track{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:6px}
+.track::-webkit-scrollbar{display:none}
+.quote{flex:0 0 min(440px,86%);scroll-snap-align:start;border-radius:24px;padding:28px;background:rgba(254,254,254,.08);border:1px solid rgba(254,254,254,.18);backdrop-filter:blur(8px);display:grid;gap:14px;align-content:start;min-width:0}
+.quote h4{font-family:var(--f-body);font-weight:500;font-size:1.08rem;color:#e2e8f0;line-height:1.4}
+.quote p{font-weight:300;color:#cbd5e1}
+.quote p::before{content:"“";font-family:var(--f-display);color:var(--cyan);font-size:2.2rem;line-height:0;vertical-align:-.45em;margin-right:4px}
+.arrows{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.arrow{width:52px;height:52px;border-radius:14px;border:0;background:var(--cyan-2);color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .2s, background .2s}
+.arrow:hover{transform:translateY(-2px);background:var(--cyan)}
+.arrow svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4}
+.arrow[disabled]{opacity:.35;cursor:default;transform:none}
+.stage{height:40px;margin:26px auto 0;max-width:640px;border-radius:50%;border:2px solid rgba(255,255,255,.5);border-left-color:transparent;border-right-color:transparent;opacity:.5}
+
+/* insights: sticky windows */
+.notes{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 30px;max-width:900px;margin:0 auto}
+.note{border-radius:10px;padding:46px 30px 30px;font-family:var(--f-body);font-weight:600;font-size:clamp(1rem,1.7vw,1.22rem);line-height:1.35;position:relative;rotate:var(--r,0deg);transition:rotate .4s, transform .4s;box-shadow:0 20px 40px -20px rgba(0,0,0,.8)}
+.note::before{content:"";position:absolute;left:14px;top:14px;width:30px;height:6px;background:radial-gradient(circle,currentColor 2px,transparent 2.5px) 0 0/10px 6px;opacity:.5}
+.note::after{content:"";position:absolute;left:0;right:0;top:32px;height:1px;background:currentColor;opacity:.12}
+.note:hover{rotate:0deg;transform:translateY(-6px) scale(1.02);z-index:2}
+.note.blue{background:linear-gradient(180deg,#8fd1ec,#0aa6d6);color:#0c1f2b}
+.note.dark{background:#2a2a2a;border:1px solid #3a3a3a;color:#f2f2f2}
+.note .tag{display:block;font-family:var(--f-mono);font-size:.66rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;opacity:.7;margin-top:14px}
+@media (max-width:640px){.notes{grid-template-columns:1fr}}
+
+/* gaps */
+.gaps{display:grid;gap:12px}
+.gap{display:grid;grid-template-columns:56px 1fr auto;gap:20px;align-items:center;padding:20px 22px;border-radius:14px;background:var(--panel);border:1px solid var(--line);transition:border-color .3s,transform .3s}
+.gap:hover{border-color:var(--cyan);transform:translateX(4px)}
+.gap .n{font-family:var(--f-display);font-weight:700;font-size:1.6rem;color:var(--line);-webkit-text-stroke:1px var(--muted)}
+.gap b{font-family:var(--f-display);font-weight:600;font-size:1.12rem;display:block}
+.gap span{color:var(--muted);font-size:.92rem}
+.dev{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.dev em{font-style:normal;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:99px;border:1px solid rgba(34,211,238,.4);color:var(--cyan);white-space:nowrap}
+.hmw{margin-top:40px;padding:clamp(24px,4vw,40px);border-radius:20px;background:linear-gradient(120deg,rgba(34,211,238,.12),rgba(109,140,245,.08));border:1px solid rgba(34,211,238,.3);font-family:var(--f-display);font-size:clamp(1.25rem,2.6vw,1.9rem);font-weight:500;line-height:1.3}
+.hmw small{display:block;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.18em;color:var(--cyan);margin-bottom:12px;text-transform:uppercase}
+@media (max-width:640px){.gap{grid-template-columns:40px 1fr}.dev{grid-column:1/-1;justify-content:flex-start}}
+
+/* blueprint */
+.bp-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:28px}
+.bp-tabs{display:flex;gap:6px;padding:5px;border-radius:999px;background:var(--panel);border:1px solid var(--line)}
+.bp-tab{border:0;background:transparent;color:var(--muted);font-family:var(--f-display);font-weight:600;font-size:.9rem;padding:9px 18px;border-radius:999px;cursor:pointer;transition:background .25s,color .25s}
+.bp-tab[aria-selected="true"]{background:var(--cyan);color:var(--bg)}
+.scenario{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;margin-bottom:28px;padding:22px 24px;border-radius:16px;background:var(--bg-2);border:1px solid var(--line)}
+.scenario .who{font-family:var(--f-display);font-weight:700;color:var(--cyan);font-size:1.05rem;white-space:nowrap}
+.scenario p{color:var(--fg);max-width:80ch}
+.bp-frame{position:relative;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.bp-scroll{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:#0f1318;padding:22px 18px;min-width:0}
+.bp{display:grid;grid-template-columns:110px repeat(var(--cols),minmax(132px,1fr));gap:10px;min-width:calc(110px + var(--cols) * 142px)}
+.bp .lab{font-family:var(--f-display);font-weight:700;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;align-self:center;line-height:1.3;border-right:1px solid #fff3;padding-right:10px}
+.phase{background:var(--bp-phase);color:#1a1a1a;font-family:var(--f-display);font-weight:700;font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;text-align:center;line-height:1.2;padding:12px 18px 12px 22px;clip-path:polygon(0 0,88% 0,100% 50%,88% 100%,0 100%,10% 50%);display:grid;place-items:center;min-height:52px}
+.cell{border-radius:4px;padding:10px;font-size:.74rem;line-height:1.35;color:#0e2233;min-height:106px;opacity:0;transform:translateY(12px)}
+.cell.empty{background:transparent!important;border:1px dashed #ffffff1c}
+.r-ev .cell{background:var(--bp-ev)}
+.r-cust .cell{background:var(--bp-cust)}
+.r-on .cell{background:var(--bp-on)}
+.r-back .cell{background:var(--bp-back)}
+.r-sup .cell{background:var(--bp-sup);color:#f2f2f2;min-height:70px}
+.r-ev,.r-cust,.r-on,.r-back,.r-sup,.r-ph{display:contents}
+.divider{grid-column:1/-1;display:grid;grid-template-columns:110px 1fr;align-items:center;gap:10px;margin-block:2px}
+.divider span{font-family:var(--f-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:#fff9}
+.divider i{height:0;border-top:2px dashed #fffc}
+.bp.show .cell{animation:cellIn .5s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--d) * 28ms)}
+@keyframes cellIn{to{opacity:1;transform:none}}
+.bp-next{width:56px;height:56px}
+.bp-next svg{transition:transform .4s}
+.bp-next.back svg{transform:rotate(180deg)}
+.bp-hint{font-size:.85rem;color:var(--muted);margin-top:12px}
+@media (max-width:640px){.bp-frame{grid-template-columns:1fr}.bp-next{justify-self:end}.scenario{grid-template-columns:1fr}}
+
+/* user flow / generic figure */
+.figure{border-radius:20px;border:1px solid var(--line);background:var(--bg);padding:clamp(16px,3vw,32px);overflow:hidden}
+.figure img{margin:0 auto}
+
+/* journeys */
+.band{position:relative;padding-block:28px;text-align:center;background:linear-gradient(180deg,#6cc7e6,#0b9fd1);color:#fff}
+.band h2{font-size:clamp(1.6rem,3.6vw,2.6rem);text-shadow:0 2px 12px rgba(0,0,0,.25)}
+.band p{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;opacity:.9;margin-top:6px}
+.story{display:grid;gap:clamp(48px,7vw,96px)}
+.beat{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,72px);align-items:center}
+.beat.flip .beat-img{order:2}
+.beat-img img{margin:0 auto;max-height:620px;width:auto;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.beat-img:hover img{transform:rotate(-2deg) translateY(-8px)}
+.beat-copy{display:grid;gap:14px;min-width:0}
+.beat-copy .step{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.16em;color:var(--cyan);text-transform:uppercase}
+.beat-copy p{color:var(--muted);font-size:1.02rem;max-width:46ch}
+.beat-copy .bubble{border:1px solid #ffffff38;border-radius:22px;padding:22px 24px;color:#d8dee6;font-weight:300;max-width:46ch}
+@media (max-width:760px){.beat{grid-template-columns:1fr}.beat.flip .beat-img{order:0}}
+
+/* device switcher (prototype trio) */
+.proto{border-radius:24px;border:1px solid var(--line);background:radial-gradient(ellipse at 50% 30%,#1f2731,#0e1217 70%);padding:clamp(20px,4vw,44px);display:grid;gap:24px}
+.ptabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.ptab{border:1px solid var(--line);background:var(--panel);color:var(--muted);font-family:var(--f-display);font-weight:600;font-size:.88rem;padding:9px 18px;border-radius:999px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;transition:all .25s}
+.ptab svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+.ptab[aria-selected="true"]{border-color:var(--cyan);color:var(--fg);background:rgba(34,211,238,.1)}
+.pview{display:grid;place-items:center;min-height:clamp(260px,40vw,520px)}
+.pview img{max-height:520px;width:auto;border-radius:18px;animation:swap .55s cubic-bezier(.2,.7,.2,1)}
+.pview img.car{width:100%;max-height:none;border-radius:14px}
+.pview img.watch{max-height:300px;border-radius:40px}
+@keyframes swap{from{opacity:0;transform:translateY(16px) scale(.97)}}
+.pcap{text-align:center;color:var(--muted);font-size:.95rem;max-width:60ch;margin:0 auto}
+.gallery{display:grid;gap:clamp(36px,5vw,64px);margin-top:clamp(56px,7vw,96px)}
+.gallery h3{text-align:center;margin-bottom:22px;font-weight:500}
+.gallery img{margin:0 auto}
+
+/* design system */
+.ds{display:grid;gap:clamp(40px,5vw,64px)}
+.ds-row{display:grid;grid-template-columns:220px 1fr;gap:clamp(20px,4vw,48px);align-items:start;border-top:1px solid var(--line);padding-top:28px}
+.ds-row h3{font-size:1.2rem}
+.ds-row h3 + p{color:var(--muted);font-size:.92rem;margin-top:8px}
+.swatches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.sw{display:grid;grid-template-columns:1.4fr 1fr;border-radius:14px;overflow:hidden;border:1px solid #ffffff2a;min-height:180px}
+.sw .base{padding:18px;display:flex;flex-direction:column;justify-content:flex-end;font-family:var(--f-display);font-weight:600}
+.sw .base small{font-family:var(--f-mono);font-weight:400;font-size:.8rem;opacity:.85}
+.sw .shades{display:grid}
+.sw .shades i{display:block;transition:flex .3s}
+.sem{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.sem div{display:grid;gap:8px}
+.sem span{display:flex;justify-content:space-between;font-size:.85rem;font-weight:500}
+.sem span small{font-family:var(--f-mono);color:var(--muted)}
+.sem i,.grads i{display:block;height:96px;border-radius:0 36px 0 0;border:1px solid #ffffff22;transition:transform .3s}
+.sem i:hover,.grads i:hover{transform:translateY(-4px)}
+.grads{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.type-card{border:1px solid #6366f1aa;border-radius:16px;padding:26px 30px;background:#1a1f29;box-shadow:0 0 40px -12px #6366f180;display:grid;gap:6px;font-family:var(--f-display)}
+.type-card .d{font-size:clamp(2.4rem,5vw,3.6rem);font-weight:700;line-height:1}
+.type-card span{font-size:1.05rem}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center}
+.type-grid p{color:var(--muted)}
+@media (max-width:760px){.ds-row{grid-template-columns:1fr}.swatches,.type-grid{grid-template-columns:1fr}.sem,.grads{grid-template-columns:1fr 1fr}}
+
+/* footer */
+.end{text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(34,211,238,.14),transparent 60%)}
+.end h2{font-size:clamp(2.2rem,5vw,3.8rem)}
+.end .lede{margin:18px auto 0}
+.contact{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:30px}
+.mail{display:inline-flex;align-items:center;gap:10px;padding:10px 12px 10px 18px;border:1px solid var(--line);border-radius:999px;font-family:var(--f-mono);font-size:.9rem;user-select:all}
+.mail button{border:0;border-radius:999px;background:var(--panel);color:var(--fg);padding:6px 12px;font-family:var(--f-body);font-size:.8rem;cursor:pointer}
+footer{padding-block:28px;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* reveal */
+.rv.pending{opacity:0;transform:translateY(28px)}
+.rv{transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .rv.pending{opacity:1;transform:none}
+  .cell{opacity:1;transform:none}
+  .mark{transform:scale(1)}
+}
+</style>
+</head>
+<body>
+
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top">ME4U <span>/</span> MULTI-DEVICE</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#context">Context</a>
+      <a href="#research">Research</a>
+      <a href="#problem">Problem</a>
+      <a href="#blueprint">Blueprint</a>
+      <a href="#screens">Screens</a>
+      <a href="#system">Design system</a>
+    </nav>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="hero" id="top">
+  <img class="hero-img" src="img/hero.webp" alt="Mahindra XEV 9e Cinéluxe in black and white, title Multi-Device Design, Smart mobility: Car System" width="1920" height="960">
+  <div class="hero-fade"></div>
+</div>
+
+<section class="intro">
+  <div class="wrap intro-grid">
+    <div class="rv">
+      <h1><small>UX case study · Govind Patel</small>One car, three screens, <span class="grad">no gaps.</span></h1>
+      <p class="lede">Me4U is Mahindra's connected-car app for the XEV electric SUVs. I designed how it works across phone, smartwatch and the car's own display, so an owner can check, control and find the car from whichever device is closest.</p>
+      <dl class="meta">
+        <div><dt>Project</dt><dd>Concept redesign</dd></div>
+        <div><dt>Devices</dt><dd>Phone · Watch · Car display</dd></div>
+        <div><dt>Methods</dt><dd>Interviews, competitive audit, service blueprint</dd></div>
+        <div><dt>Tool</dt><dd>Figma</dd></div>
+      </dl>
+      <div class="cta-row">
+        <a class="btn" href="https://www.figma.com/proto/l2oKdwldbNHzDFcUuwAlpc/Multi-device?node-id=69-1547&t=1JH2uELFr4CAAcgR-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=19%3A2241&show-proto-sidebar=1" target="_blank" rel="noopener">Open the prototype
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+        <a class="btn ghost" href="#blueprint">Jump to the blueprint</a>
+      </div>
+    </div>
+    <div class="devices rv"><img src="img/devices.webp" alt="Me4U on a phone and an Apple Watch" width="795" height="528"></div>
+  </div>
+</section>
+
+<section id="context">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">Context · Smart mobility</p>
+      <h2>The car stopped being a machine you drive and became a <span class="grad">platform you stay connected to.</span></h2>
+      <p class="lede">Smart mobility moves the focus from the single vehicle to an ecosystem that links vehicles, infrastructure and people. That shift is what makes a multi-device experience necessary in the first place.</p>
+    </div>
+    <div class="shift rv">
+      <div class="shift-pane">
+        <div class="era analog">
+          <span class="yrs">1900 – 2010</span>
+          <h3>ANALOG</h3>
+          <p>Combustion engines, manual control, disconnected hardware and linear ownership.</p>
+          <img src="img/analog.webp" alt="A mechanical engine part" width="665" height="246" loading="lazy">
+        </div>
+        <div class="era digital">
+          <span class="yrs">2024 – BEYOND</span>
+          <h3>DIGITAL</h3>
+          <p>Electric drivetrains, AI-assisted driving, V2X connectivity and mobility as a service.</p>
+          <img src="img/digital.webp" alt="A phone running a connected-car interface" width="665" height="246" loading="lazy">
+        </div>
+      </div>
+      <div class="shift-dial" aria-hidden="true">SHIFT</div>
+    </div>
+
+    <div class="compare">
+      <div class="old rv">
+        <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>Traditional vehicles</h4>
+        <ul>
+          <li><b>Mechanical focus</b><span>Value comes from hardware, powertrain and build quality. Performance stays the same for the car's whole life.</span></li>
+          <li><b>Isolated operation</b><span>Information silos, with no real-time link to infrastructure or other vehicles.</span></li>
+          <li><b>Fixed functionality</b><span>Features are locked at the point of sale. Improvements need new parts or a dealership visit.</span></li>
+        </ul>
+      </div>
+      <div class="rv">
+        <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Smart mobility</h4>
+        <ul>
+          <li><b>Software-defined (SDV)</b><span>Intelligence lives in software. Hardware becomes a platform for over-the-air updates and services.</span></li>
+          <li><b>Hyper-connected</b><span>V2X lets the car exchange data with the cloud, traffic lights and pedestrians.</span></li>
+          <li><b>Autonomous-ready</b><span>Sensors and AI that can grow from driver assistance towards self-driving through updates.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--bg-2)">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">How it works</p>
+      <h2>What happens when you tap “Lock” from 2 km away</h2>
+      <p class="lede">Before designing a single screen, I mapped how the phone actually reaches a parked car. Every backstage row in the blueprint below follows this path.</p>
+    </div>
+    <div class="path rv" id="path">
+      <div class="wire"><span class="packet" id="packet"></span></div>
+      <div class="node"><div class="ring"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10.5 18.5h3"/></svg></div><div><b>Your phone</b><small>Me4U app</small></div></div>
+      <div class="node"><div class="ring"><svg viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/></svg></div><div><b>Internet</b><small>4G / 5G / Wi-Fi</small></div></div>
+      <div class="node"><div class="ring"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9.5 4.3 4.3 0 0 0 7 18z"/></svg></div><div><b>Mahindra Cloud</b><small>Me4U platform</small></div></div>
+      <div class="node"><div class="ring"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></svg></div><div><b>Car's 5G module</b><small>Always on, even when locked</small></div></div>
+      <div class="node"><div class="ring"><svg viewBox="0 0 24 24"><path d="M3 16v-3l2-5h14l2 5v3"/><path d="M3 16h18v2H3z"/><circle cx="7" cy="16" r="1.6"/><circle cx="17" cy="16" r="1.6"/></svg></div><div><b>Car systems</b><small>Locks, battery, climate, lights</small></div></div>
+    </div>
+    <ol class="steps">
+      <li class="rv">The app sends the request over 4G, 5G or Wi-Fi to Mahindra's cloud.</li>
+      <li class="rv">The cloud confirms you are the authorised owner.</li>
+      <li class="rv">It sends the command to your specific car using its unique identifier.</li>
+      <li class="rv">The car's 5G module receives it and wakes the systems it needs.</li>
+      <li class="rv">The car replies with current data: battery level, location, lock state.</li>
+      <li class="rv">The response travels back along the same path to your phone.</li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wrap orbit-wrap">
+    <div class="rv">
+      <div class="head">
+        <p class="eyebrow">Stakeholders</p>
+        <h2>Who the smart car answers to</h2>
+        <p class="lede">The driver is the main user, but a connected car serves three rings of people and systems. I designed for the inner two and kept the outer one in view for privacy and safety decisions.</p>
+      </div>
+      <div class="legend">
+        <div style="--c:#f06a1a"><b>Primary</b><span>Driver and passengers, who use the car and the app directly.</span></div>
+        <div style="--c:#b9774f"><b>Secondary</b><span>Cloud, OEM, charging networks and maintenance, who keep it running.</span></div>
+        <div style="--c:#6b7380"><b>Tertiary</b><span>Authorities, city infrastructure, cyber regulators, insurers, road users, sustainability groups and the general public.</span></div>
+      </div>
+    </div>
+    <div class="orbit rv" role="img" aria-label="Stakeholder map: smart car at the centre, primary, secondary and tertiary rings">
+      <div class="ring-t"></div><div class="ring-s"></div><div class="ring-p"></div>
+      <span class="tier-label" style="top:-11px">Tertiary</span>
+      <div class="spin">
+        <span class="chip" style="left:24%;top:9%;--c:#cbd5e1"><i></i>Authorities</span>
+        <span class="chip" style="left:84%;top:14%;--c:#22d3ee"><i></i>Cyber regulators</span>
+        <span class="chip" style="left:4%;top:46%;--c:#cbd5e1"><i></i>City infra</span>
+        <span class="chip" style="left:96%;top:56%;--c:#22d3ee"><i></i>General public</span>
+        <span class="chip" style="left:12%;top:80%;--c:#a855f7"><i></i>Insurance</span>
+        <span class="chip" style="left:82%;top:86%;--c:#f59e0b"><i></i>Road users</span>
+        <span class="chip" style="left:50%;top:100%;--c:#34d399"><i></i>Sustainability groups</span>
+      </div>
+      <div class="spin rev">
+        <span class="chip" style="left:30%;top:28%;--c:#f06a1a"><i></i>Cloud</span>
+        <span class="chip" style="left:72%;top:28%;--c:#f06a1a"><i></i>Charging</span>
+        <span class="chip" style="left:28%;top:72%;--c:#f06a1a"><i></i>OEM</span>
+        <span class="chip" style="left:72%;top:72%;--c:#f06a1a"><i></i>Maintenance</span>
+      </div>
+      <span class="chip" style="left:50%;top:34%;--c:#f06a1a"><i></i>Driver</span>
+      <span class="chip" style="left:50%;top:67%;--c:#f06a1a"><i></i>Passenger</span>
+      <div class="core">SMART<br>CAR</div>
+    </div>
+  </div>
+</section>
+
+<section id="research" style="background:var(--bg-2)">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">Research · Competitive audit</p>
+      <h2>Remote vehicle commands, compared</h2>
+      <p class="lede">I compared what four electric SUVs in India let you do from the app. Finding the car is the weakest feature across the market: only one competitor offers it, and only partly.</p>
+    </div>
+    <div class="table-scroll rv" id="comp">
+      <table class="comp">
+        <thead><tr><th></th>
+          <th class="own"><div class="logo" style="background:#3b82f6"><svg viewBox="0 0 24 24"><path d="M4 15v-3l2-5h12l2 5v3H4zM7 15v2M17 15v2"/></svg></div>XEV 9S<small>PREMIUM CORE</small></th>
+          <th><div class="logo" style="background:#6d5ce8"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="9" height="18" rx="1.5"/><path d="M14 9h2.5a1.5 1.5 0 0 1 1.5 1.5V16a1.5 1.5 0 0 0 3 0V8l-3-3"/></svg></div>Harrier EV<small>PERFORMANCE</small></th>
+          <th><div class="logo" style="background:#e5484d"><svg viewBox="0 0 24 24"><path d="M13 3 6 13h5l-1 8 7-10h-5z"/></svg></div>MG ZS EV<small>EFFICIENT</small></th>
+          <th><div class="logo" style="background:#0e9fb8"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M13 6 9 13h4l-1 5 4-7h-4z"/></svg></div>Kona EV<small>ENDURANCE</small></th>
+        </tr></thead>
+        <tbody id="comp-body"></tbody>
+      </table>
+    </div>
+
+    <div class="head rv" style="margin-top:clamp(72px,9vw,120px)">
+      <p class="eyebrow">Research · Owner interviews</p>
+      <h2>What owners told me</h2>
+      <p class="lede">Six questions to EV and connected-car owners about parking, daily driving and the apps they already use.</p>
+    </div>
+    <div class="carousel rv">
+      <div class="track" id="track" tabindex="0" aria-label="Interview answers"></div>
+      <div class="arrows">
+        <button class="arrow" id="qprev" aria-label="Previous answer"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>
+        <button class="arrow" id="qnext" aria-label="Next answer"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
+      </div>
+      <div class="stage" aria-hidden="true"></div>
+    </div>
+
+    <div class="head rv" style="margin-top:clamp(72px,9vw,120px)">
+      <p class="eyebrow">Research · Key insights</p>
+      <h2>What I heard about the XEV 9S itself</h2>
+    </div>
+    <div class="notes" id="notes"></div>
+  </div>
+</section>
+
+<section id="problem">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">The problem</p>
+      <h2>Five gaps between the owner and the car</h2>
+      <p class="lede">Cross-checking the interviews against the current Me4U app left five things owners need that no device handles today. Each one points to the device that is already in reach at that moment.</p>
+    </div>
+    <div class="gaps">
+      <div class="gap rv"><span class="n">01</span><div><b>No lock confirmation after walking away</b><span>“I always worry about that.” Owners pull out the phone just to double-check.</span></div><div class="dev"><em>Watch</em></div></div>
+      <div class="gap rv"><span class="n">02</span><div><b>Battery and range need the phone</b><span>Pull out phone, open app, wait for it to load, for one number.</span></div><div class="dev"><em>Watch</em><em>Phone</em></div></div>
+      <div class="gap rv"><span class="n">03</span><div><b>No low-battery alert on the wrist</b><span>The warning only exists on the dashboard, so it is missed when the driver is away.</span></div><div class="dev"><em>Watch</em><em>Car</em></div></div>
+      <div class="gap rv"><span class="n">04</span><div><b>No AC control from the watch</b><span>Pre-cooling the cabin should be one tap, not an app session.</span></div><div class="dev"><em>Watch</em></div></div>
+      <div class="gap rv"><span class="n">05</span><div><b>No help while waiting at a charger</b><span>Charge time, progress and what to do meanwhile are scattered or missing.</span></div><div class="dev"><em>Car</em><em>Phone</em><em>Watch</em></div></div>
+    </div>
+    <div class="hmw rv"><small>How might we</small>…let an XEV owner check, control and find their car from whichever device is closest, without pulling out the phone for one number?</div>
+  </div>
+</section>
+
+<section id="blueprint" style="background:var(--bg-2)">
+  <div class="wrap">
+    <div class="bp-head">
+      <div class="head rv" style="margin:0">
+        <p class="eyebrow">Service blueprint</p>
+        <h2>Two days, three devices</h2>
+        <p class="lede">I tested the idea against two realistic journeys. Each blueprint shows what the owner does, what each device shows, and what happens backstage in the cloud and the car.</p>
+      </div>
+      <div class="bp-tabs" role="tablist" aria-label="Scenario">
+        <button class="bp-tab" role="tab" id="tab-0" aria-selected="true" data-s="0">Arjun · First day</button>
+        <button class="bp-tab" role="tab" id="tab-1" aria-selected="false" data-s="1">Vikram · Family trip</button>
+      </div>
+    </div>
+    <div class="scenario rv"><span class="who" id="bp-who">Scenario</span><p id="bp-text"></p></div>
+    <div class="bp-frame rv">
+      <div class="bp-scroll" id="bp-scroll"><div class="bp" id="bp" role="table" aria-label="Service blueprint"></div></div>
+      <button class="arrow bp-next" id="bp-next" aria-label="Show the other scenario"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
+    </div>
+    <p class="bp-hint">Scroll the blueprint sideways on small screens. Press the arrow to switch scenarios.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">User flow</p>
+      <h2>Kept shallow on purpose</h2>
+      <p class="lede">Every task in both journeys is reachable within two taps of Home: navigation and battery status from the home screen, and sending a route to the car straight from search.</p>
+    </div>
+    <div class="figure rv"><img src="img/userflow.webp" alt="User flow: Me4U, sign up or sign in, Home, then Navigation, Charging and Car; Navigation leads to Enter location, then Send to car or Plan trip" width="1581" height="802" loading="lazy"></div>
+  </div>
+</section>
+
+<div id="screens" class="band"><h2>First journey · Arjun</h2><p>Phone → Car → Watch</p></div>
+<section>
+  <div class="wrap">
+    <div class="story">
+      <div class="beat rv">
+        <div class="beat-img"><img src="img/j1-home.webp" alt="Me4U home screen on a phone" width="472" height="565" loading="lazy"></div>
+        <div class="beat-copy"><span class="step">Morning · at home · phone</span><h3>Home is a command centre</h3><p class="bubble">The first thing you see when you open Me4U. It gives a full snapshot of the XEV 9S at a glance, range, charge and lock state, without extra taps or navigation.</p></div>
+      </div>
+      <div class="beat flip rv">
+        <div class="beat-img"><img src="img/j1-nav.webp" alt="Navigation screens on two phones" width="735" height="714" loading="lazy"></div>
+        <div class="beat-copy"><span class="step">Morning · at home · phone</span><h3>Plan the route before leaving the bed</h3><p class="bubble">Navigation is where Arjun tells the car where to go. He searches for the new office, and the route is ready on the dashboard before he reaches the car.</p></div>
+      </div>
+      <div class="beat rv">
+        <div class="beat-img"><img src="img/j1-sent.webp" alt="Confirmation that the route was sent to the vehicle" width="540" height="711" loading="lazy"></div>
+        <div class="beat-copy"><span class="step">Hand-off · phone to car</span><h3>Confirm, then let go</h3><p class="bubble">A green check and “Route sent to vehicle” give immediate reassurance, so the user carries on with the day without second-guessing.</p></div>
+      </div>
+    </div>
+
+    <div class="proto rv" style="margin-top:clamp(72px,9vw,112px)" data-proto="1">
+      <div class="head" style="margin:0;text-align:center;justify-items:center">
+        <p class="eyebrow">Prototype · Journey 1</p>
+        <h3>The same moment on every device</h3>
+      </div>
+      <div class="ptabs" role="tablist"></div>
+      <div class="pview"></div>
+      <p class="pcap"></p>
+    </div>
+
+    <div class="gallery">
+      <div class="rv"><h3>Watch</h3><img src="img/watch-row.webp" alt="Five watch screens: watch face, app grid, battery, quick controls, locate my car" width="1205" height="242" loading="lazy"></div>
+      <div class="rv"><h3>Phone</h3><img src="img/app-screens.webp" alt="Five phone screens: search, navigation, home, battery status, trip planner" width="1550" height="852" loading="lazy"></div>
+      <div class="rv"><h3>Car display</h3><img src="img/car-screens-1.webp" alt="Four car display screens: home dashboard, route, recent destinations, route with start button" width="1635" height="756" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<div class="band"><h2>Second journey · Vikram</h2><p>Phone → Car → Watch → Car</p></div>
+<section>
+  <div class="wrap">
+    <div class="story">
+      <div class="beat rv">
+        <div class="beat-img"><img src="img/j2-phones.webp" alt="Battery status and trip planner screens on two phones" width="681" height="881" loading="lazy"></div>
+        <div class="beat-copy">
+          <span class="step">Day before · phone</span><h3>Plan the charge, not just the route</h3>
+          <p class="bubble">Battery Status shows the current charge of the XEV 9S at a glance.</p>
+          <p class="bubble">Trip Planning is where the journey takes shape. Enter a destination and the app shows the route, travel time, chargers along the way and the car's current range, all in one view.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="proto rv" style="margin-top:clamp(72px,9vw,112px)" data-proto="2">
+      <div class="head" style="margin:0;text-align:center;justify-items:center">
+        <p class="eyebrow">Prototype · Journey 2</p>
+        <h3>From the driveway to the charger</h3>
+      </div>
+      <div class="ptabs" role="tablist"></div>
+      <div class="pview"></div>
+      <p class="pcap"></p>
+    </div>
+
+    <div class="gallery">
+      <div class="rv"><h3>Phone</h3><img src="img/app-screens-2.webp" alt="Battery status, home and trip planner phone screens" width="937" height="854" loading="lazy"></div>
+      <div class="rv"><h3>Watch</h3><img src="img/watch-row-2.webp" alt="Five watch screens for the family trip" width="1205" height="242" loading="lazy"></div>
+      <div class="rv"><h3>Car display</h3><img src="img/car-screens-2.webp" alt="Six car display screens: dashboard, weekend trip route, critical battery alert, charging at 65%, device connected, resume trip" width="1617" height="1105" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<section id="system" style="background:var(--bg-2)">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">Design system</p>
+      <h2>Plum, amber and one typeface</h2>
+      <p class="lede">Calm, warm tones that draw attention without overwhelming a driver, carried the same way across a 1.9-inch watch and a 12-inch dashboard.</p>
+    </div>
+    <div class="ds">
+      <div class="ds-row rv">
+        <div><h3>Colour palette</h3><p>Plum for surfaces, amber for action and charge state.</p></div>
+        <div class="swatches">
+          <div class="sw"><div class="base" style="background:#1d0f20;color:#fff">Primary<small>HEX #1D0F20</small></div><div class="shades"><i style="background:#e879a8"></i><i style="background:#e891b4"></i><i style="background:#9b4e6c"></i><i style="background:#7e3c58"></i><i style="background:#5e2740"></i></div></div>
+          <div class="sw"><div class="base" style="background:#a05707;color:#fff">Secondary<small>HEX #A05707</small></div><div class="shades"><i style="background:#f0a64a"></i><i style="background:#ffb55a"></i><i style="background:#e8a885"></i><i style="background:#8a4a05"></i><i style="background:#4a2a05"></i></div></div>
+        </div>
+      </div>
+      <div class="ds-row rv">
+        <div><h3>Semantics</h3><p>Reserved for state: charged, critical, attention.</p></div>
+        <div class="sem">
+          <div><span>Success <small>#7FB83A</small></span><i style="background:#7fb83a"></i></div>
+          <div><span>Error <small>#CB4619</small></span><i style="background:#cb4619"></i></div>
+          <div><span>Warning <small>#E9BA27</small></span><i style="background:#e9ba27"></i></div>
+        </div>
+      </div>
+      <div class="ds-row rv">
+        <div><h3>Gradients</h3><p>Used for buttons, cards and the car dashboard panels.</p></div>
+        <div class="grads">
+          <i style="background:linear-gradient(135deg,#e8913c,#f0b060)"></i>
+          <i style="background:linear-gradient(135deg,#141414,#3a3f44)"></i>
+          <i style="background:linear-gradient(135deg,#5a1f3a,#9b4e6c 55%,#a8607a)"></i>
+        </div>
+      </div>
+      <div class="ds-row rv">
+        <div><h3>Typography</h3><p>Oxanium, for its readability on screens and its clean, technical character.</p></div>
+        <div class="type-grid">
+          <div class="type-card"><span class="d">Display</span><span style="font-weight:700">Oxanium Bold</span><span style="font-weight:600">Oxanium Semi Bold</span><span style="font-weight:500">Oxanium Medium</span><span style="font-weight:400">Oxanium Regular</span><span style="font-weight:300">Oxanium Light</span></div>
+          <p style="font-family:var(--f-display);font-size:clamp(3rem,8vw,6rem);font-weight:700;line-height:1;color:var(--fg)">Aa<span style="color:var(--amber-l)">.</span><br><span style="font-size:.28em;font-weight:400;letter-spacing:.3em;color:var(--muted)">0123456789</span></p>
+        </div>
+      </div>
+      <div class="ds-row rv">
+        <div><h3>Iconography</h3><p>Google's Material icons, for a consistent, clean style in line with platform standards.</p></div>
+        <div><img src="img/icons.webp" alt="Icon set: lock, car, AC, lights, SOS, roadside assistance, charging, notifications, location" width="359" height="360" loading="lazy" style="margin:0"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="end">
+  <div class="wrap rv">
+    <p class="eyebrow" style="justify-content:center">Try it yourself</p>
+    <h2>Click through <span class="grad">both journeys</span></h2>
+    <p class="lede">The Figma prototype runs both scenarios across phone, watch and car display.</p>
+    <div class="cta-row" style="justify-content:center">
+      <a class="btn" href="https://www.figma.com/proto/l2oKdwldbNHzDFcUuwAlpc/Multi-device?node-id=69-1547&t=1JH2uELFr4CAAcgR-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=19%3A2241&show-proto-sidebar=1" target="_blank" rel="noopener">Open the prototype
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+    </div>
+    <div class="contact">
+      <span class="mail"><span id="mail">govindsdesign@gmail.com</span><button id="copy" type="button">Copy</button></span>
+      <a class="btn ghost" href="https://www.linkedin.com/in/govind-patel-53023629a/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn ghost" href="https://www.behance.net/govindpatel2003" target="_blank" rel="noopener">Behance</a>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>Govind Patel · Product &amp; UX designer · Pune</span><span>Concept project. Mahindra, XEV and Me4U are trademarks of Mahindra &amp; Mahindra.</span></div></footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* competitive table */
+  const comp = [
+    ['Find My Car','GPS vehicle tracking',['y','p','n','n']],
+    ['Lock / Unlock','Security management',['y','y','y','n']],
+    ['AC control','Pre-conditioning cabin',['y','y','y','n']],
+    ['Light flash','Visual signal',['y','y','n','n']],
+    ['Remote horn','Audio signalling',['y','y','n','n']],
+    ['Geo-fencing','Zone perimeter alerts',['y','y','n','n']],
+  ];
+  const sym = {y:'✓', n:'✕', p:'LIMITED'};
+  const lbl = {y:'Supported', n:'Not supported', p:'Limited support'};
+  document.getElementById('comp-body').innerHTML = comp.map(([f,s,v],r) =>
+    `<tr><th scope="row">${f}<small>${s}</small></th>${v.map((x,i)=>`<td class="${i===0?'own':''}"><span class="mark ${x}" style="transition-delay:${(r*4+i)*45}ms" aria-label="${lbl[x]}">${sym[x]}</span></td>`).join('')}</tr>`).join('');
+
+  /* interviews */
+  const quotes = [
+    ['What do you currently do when you forget where you parked?','I press the car key panic button to hear the horn. If that doesn’t work, I walk around randomly pressing the button until I hear it. Sometimes I take a photo of the parking bay number, but I forget to do that half the time.'],
+    ['Can you describe a typical day of driving in your city? What’s the biggest challenge?','I have a driver for most trips. When I drive myself on weekends, the challenge is two-wheelers. They come from everywhere. My Innova is big, so I’m constantly checking ORVMs. I wish the car could warn me about bikes in blind spots more intelligently.'],
+    ['Do you take photos of your parking spot? How often do you actually use them?','Sometimes, especially in unfamiliar malls. But honestly, I forget I took the photo, or I can’t find it in my gallery when I need it. By the time I remember, I’m already lost.'],
+    ['Have you ever used your car app’s “Find My Car” feature?','I tried it once. It showed a dot on a map, but I couldn’t tell which floor I was on or which direction to walk. The map didn’t show stairs or elevators. I ended up walking in circles anyway.'],
+    ['Would you like to check your car’s battery or lock status on your watch?','That would be so useful! Right now I have to pull out my phone, open the app, wait for it to load. On my wrist would be instant. Especially to check if I locked the car. I always worry about that.'],
+    ['What do you think about connected car apps? Do you use them?','Tata’s ZConnect app, I use it daily. Battery status, pre-cool the car, see where it’s parked in a mall. But it’s slow sometimes. It once showed a tyre pressure warning and it was fine. False alarm. Now I trust it less.'],
+  ];
+  const track = document.getElementById('track');
+  track.innerHTML = quotes.map(([q,a]) => `<article class="quote"><h4>${q}</h4><p>${a}</p></article>`).join('');
+  const qprev = document.getElementById('qprev'), qnext = document.getElementById('qnext');
+  const step = () => track.querySelector('.quote').offsetWidth + 20;
+  const syncQ = () => { qprev.disabled = track.scrollLeft < 8; qnext.disabled = track.scrollLeft + track.clientWidth > track.scrollWidth - 8; };
+  qprev.onclick = () => track.scrollBy({left:-step(), behavior: reduce?'auto':'smooth'});
+  qnext.onclick = () => track.scrollBy({left: step(), behavior: reduce?'auto':'smooth'});
+  track.addEventListener('scroll', syncQ, {passive:true}); syncQ();
+
+  /* insights */
+  const notes = [
+    ['blue','The XEV 9S is “India’s first three-row electric SUV” with no direct competitor in the mass-market segment.','Market'],
+    ['dark','Physical buttons for AC… It’s distracting to use the screen while driving. A bit of a learning curve.','Pain point'],
+    ['dark','The interface is very intuitive to use. Connecting my phone is instant.','Strength'],
+    ['blue','My family loves the space. Rear AC is very effective. Range is good for our weekend trips.','Strength'],
+    ['blue','Home charging is convenient and my monthly ‘fuel’ bill has dropped by 90%.','Strength'],
+    ['dark','Steering wheel haptic buttons get pressed accidentally when drivers honk, causing unintended actions.','Pain point'],
+    ['dark','Features are designed for everyone in the cabin, second and third rows included, with screens and charging for children.','Strength'],
+    ['blue','Most in-car functions are folded into the central touchscreen, whose interface can be confusing to navigate.','Pain point'],
+  ];
+  const rot = [-2.2,1.6,-1.2,2.4,1.4,-1.8,-1.4,2];
+  document.getElementById('notes').innerHTML = notes.map(([c,t,tag],i)=>`<div class="note ${c} rv" style="--r:${rot[i]}deg">${t}<span class="tag">${tag}</span></div>`).join('');
+
+  /* service blueprint */
+  const S = [
+    { who:'Arjun · First day',
+      text:'Arjun just joined a new company. It’s his first day. He needs to navigate to an unfamiliar office, park, attend a meeting, and later return home. This journey shows realistic device usage across all three devices.',
+      phases:['Morning: at home','Morning: at car','Morning: at office','During meeting','After meeting: office','Return home navigation'],
+      ev:['Phone on bedside table','Navigation shows new office','Meeting room','“No internet connection” message','Watch screen','Car dashboard'],
+      cust:['Opens Me4U app. Checks battery: 92%. Types the new office address and sends it. App confirms route sent to car.','Walks to car with phone in pocket. Car unlocks automatically. Sits in driver seat. Car screen shows destination.','Sitting in meeting. Opens Me4U watch app. Checks battery: 88%. Sees car is locked. Taps lock again to confirm.','Pulls out phone, opens Me4U, taps “Find My Car”. Sees loading, then an error.','Notices a new button: AR Navigate (Offline). Taps it.','Sits in driver seat. Taps Home from saved places on the dashboard. Navigation starts the route home.'],
+      on:['App shows battery 92%, range 480 km. Search field with New Office, Sector 62. Route sent to car.','Screens display “Welcome Arjun”. Navigation shows Tata Technologies Phase 1. Route highlighted.','Car lights flash once. Mirrors fold. Auto-lock engaged.','Watch shows battery 88%, range 450 km. Notification pops up on the watch.','App switches to offline GPS and camera: “Point phone to navigate.”','Car screen shows Home: 15 km, 25 minutes in traffic. Route highlighted with arrival time.'],
+      back:['Phone sends destination to Mahindra cloud. Cloud syncs it to the car’s navigation ECU.','Navigation ECU retrieves the saved destination. Route calculated with traffic.','UWB detects the phone moving beyond 15 m. Body control module locks doors. Status saved to cloud.','Watch app queries phone over BLE. Phone fetches car status from cloud, which has the latest from the car’s 5G module.','System checks locally stored car coordinates.','Profile loads saved home address from cloud. Navigation ECU calculates route with current traffic.'],
+      sup:['Me4U app','Navigation ECU','Body control ECU','Wear OS app','GPS chip activated','Navigation ECU'] },
+    { who:'Vikram · Family trip',
+      text:'It’s Friday afternoon. Vikram is driving his family, wife Priya, 10-year-old Aarav and 7-year-old Anaya, from Mumbai to Goa for the weekend with one planned charging stop. It’s their first long trip in the new XEV 9S.',
+      phases:['Day before: trip planning','Morning: packing & pre-condition','Departure: auto-unlock & profiles','Setting up rear entertainment','Alert: low battery','Charging stop: the wait','Return to car: resume drive','Arrival: parking & auto-lock'],
+      ev:['Family discussing stops','Battery: 100%','Welcome lights','Rear screens','Dashboard turns amber','Fast charger','Car unlocking','Hotel parking'],
+      cust:['Opens Me4U, enters Mumbai to Goa. App shows a charging station at 180 km. Taps Send to Car.','Checks phone: battery 100%, range 521 km. Family finishes packing; charging cables and extra bags go in the trunk.','Family walks to the car. Vikram’s phone is in his pocket and the car unlocks.','Kids connect their tablets to the car’s Wi-Fi. Content streams to the rear screens.','Dashboard shows amber: “Battery 25%. Charger in 15 km.”','Pulls into the charging station and plugs in. Dashboard: “20% → 80% in 22 minutes.” Family walks to a nearby café.','Family returns. Car unlocks as Vikram approaches. He unplugs, stows the cable, and navigation resumes.','Parks at the hotel. Family unloads and walks to the entrance. Car auto-locks. Watch vibrates to confirm.'],
+      on:['Phone shows route with elevation, chargers and estimated arrival. Route sent to the XEV 9S.','','Screens show “Welcome Vikram” for the driver.','Rear screens show “Connected”. The kids’ own content appears.','Dashboard shows estimated charge time: 22 minutes.','Car shows charging progress and the phone gets updates. Vikram checks his watch: 65%, 12 min left.','Dashboard: “80% battery. 412 km range. Resume trip?” Vikram taps Yes.','Lights flash, mirrors fold, watch shows a lock icon. Kids run ahead to the lobby.'],
+      back:['Cloud syncs destination to the navigation ECU. Charging station database queried. Route optimised for EV efficiency.','','UWB detects Vikram’s phone at 5 m. NFC on the wireless charger reads profiles.','Car’s Wi-Fi hotspot creates the network.','BMS detects the 25% threshold. Navigation confirms a charger ahead.','Car talks to the charger (ISO 15118). Telematics report every 30 s. Cloud pushes to the phone.','Proximity detection. Navigation state restored. BMS confirms enough range.','UWB detects walk-away. Body control locks doors. Status goes to cloud, then watch.'],
+      sup:['Me4U app, Cloud API, charging stations','','UWB ranging','Wi-Fi 6E','Battery monitoring, Navigation ECU','CCS charging, telematics, cloud push','UWB ranging, navigation state','UWB ranging, Body control ECU'] }
+  ];
+  const bp = document.getElementById('bp'), bpScroll = document.getElementById('bp-scroll');
+  const tabs = [...document.querySelectorAll('.bp-tab')], next = document.getElementById('bp-next');
+  let cur = 0;
+  function renderBP(i){
+    const s = S[i], n = s.phases.length; let d = 0;
+    const row = (cls,label,arr) => `<div class="${cls}" role="row"><span class="lab" role="rowheader">${label}</span>${arr.map(t=>`<div role="cell" class="cell${t?'':' empty'}" style="--d:${d++}">${t}</div>`).join('')}</div>`;
+    const div = l => `<div class="divider" aria-hidden="true"><span>${l}</span><i></i></div>`;
+    bp.style.setProperty('--cols', n);
+    bp.classList.remove('show');
+    bp.innerHTML =
+      `<div class="r-ph" role="row"><span class="lab" role="rowheader">Phases</span>${s.phases.map(p=>`<div class="phase" role="columnheader">${p}</div>`).join('')}</div>`+
+      row('r-ev','Physical evidence',s.ev) + div('Line of interaction') +
+      row('r-cust','Customer action',s.cust) +
+      row('r-on','Onstage action',s.on) + div('Line of visibility') +
+      row('r-back','Backstage action',s.back) + div('Line of internal interaction') +
+      row('r-sup','Supporting processes',s.sup);
+    document.getElementById('bp-who').textContent = s.who;
+    document.getElementById('bp-text').textContent = s.text;
+    tabs.forEach((t,k)=>t.setAttribute('aria-selected', k===i));
+    next.classList.toggle('back', i===1);
+    next.setAttribute('aria-label', i===0 ? 'Show scenario 2' : 'Show scenario 1');
+    bpScroll.scrollLeft = 0;
+    void bp.offsetWidth; bp.classList.add('show');
+  }
+  tabs.forEach(t => t.onclick = () => { cur = +t.dataset.s; renderBP(cur); });
+  next.onclick = () => { cur = 1 - cur; renderBP(cur); };
+  renderBP(0);
+
+  /* prototype device switchers */
+  const icon = {
+    Phone:'<svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/></svg>',
+    Watch:'<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="3"/><path d="M9 6V2h6v4M9 18v4h6v-4"/></svg>',
+    'Car display':'<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="11" rx="2"/><path d="M8 21h8"/></svg>'
+  };
+  const P = {
+    1:[['Phone','img/phone-home.webp','phone','Morning at home: the phone shows range, charge and lock state on one screen.',393,852],
+       ['Car display','img/car-home.webp','car','In the car: the dashboard greets Arjun with the route he sent, charge and climate.',1287,560],
+       ['Watch','img/watch-face.webp','watch','In the meeting: the watch confirms the car is locked without reaching for the phone.',198,242]],
+    2:[['Phone','img/phone-home-2.webp','phone','Before leaving: battery at 100% and the trip already planned.',393,852],
+       ['Car display','img/car-home-2.webp','car','On the road: the route, charge and cabin climate in one dashboard.',1287,560],
+       ['Watch','img/watch-face-2.webp','watch','At the charger: progress and time left, right on the wrist.',198,242]]
+  };
+  document.querySelectorAll('[data-proto]').forEach(box => {
+    const set = P[box.dataset.proto], tabsEl = box.querySelector('.ptabs'), view = box.querySelector('.pview'), cap = box.querySelector('.pcap');
+    tabsEl.innerHTML = set.map(([n],i)=>`<button class="ptab" role="tab" aria-selected="${i===0}" data-i="${i}">${icon[n]}${n}</button>`).join('');
+    const show = i => {
+      const [n,src,cls,c,w,h] = set[i];
+      view.innerHTML = `<img class="${cls}" src="${src}" alt="${n} screen" width="${w}" height="${h}" loading="lazy">`;
+      cap.textContent = c;
+      tabsEl.querySelectorAll('.ptab').forEach((b,k)=>b.setAttribute('aria-selected', k===i));
+    };
+    tabsEl.onclick = e => { const b = e.target.closest('.ptab'); if (b) show(+b.dataset.i); };
+    show(0);
+  });
+
+  /* data path packet */
+  const path = document.getElementById('path'), packet = document.getElementById('packet');
+  const nodes = [...path.querySelectorAll('.node')];
+  if (!reduce && packet.animate) {
+    const a = packet.animate([{left:'0%'},{left:'100%'},{left:'100%'},{left:'0%'}],{duration:6400,iterations:Infinity,easing:'ease-in-out'});
+    setInterval(()=>{ const t = (a.currentTime % 6400)/6400; const pos = t<.5 ? t*2 : (t<.56?1:1-(t-.56)/.44); const k = Math.round(pos*4); nodes.forEach((n,j)=>n.classList.toggle('lit', j===k)); }, 120);
+  } else nodes.forEach(n=>n.classList.add('lit'));
+
+  /* reveal, progress, nav */
+  const els = [...document.querySelectorAll('.rv')];
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.remove('pending'); io.unobserve(e.target); } }), {rootMargin:'0px 0px -8% 0px'});
+    els.forEach(el => { if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('pending'); io.observe(el); } });
+  }
+  const compEl = document.getElementById('comp');
+  if ('IntersectionObserver' in window) {
+    const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { compEl.classList.add('in'); io2.disconnect(); } }), {threshold:.3});
+    io2.observe(compEl);
+  } else compEl.classList.add('in');
+
+  const prog = document.getElementById('progress');
+  const links = [...document.querySelectorAll('.nav a')], secs = links.map(a => document.querySelector(a.getAttribute('href')));
+  const onScroll = () => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    prog.style.transform = `scaleX(${h>0 ? scrollY/h : 0})`;
+    let on = -1; secs.forEach((s,i)=>{ if (s && s.getBoundingClientRect().top < innerHeight*.4) on = i; });
+    links.forEach((a,i)=>a.classList.toggle('on', i===on));
+  };
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  /* copy email */
+  document.getElementById('copy').onclick = async e => {
+    const btn = e.currentTarget, txt = document.getElementById('mail').textContent;
+    try { await navigator.clipboard.writeText(txt); btn.textContent = 'Copied'; }
+    catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('mail')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selected'; }
+    setTimeout(()=>btn.textContent='Copy', 1800);
+  };
+})();
+</script>
+
+</body>
+</html>
